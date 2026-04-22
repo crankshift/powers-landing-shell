@@ -32,11 +32,28 @@ Lawpowers migration to the shell and businesspowers site scaffolding are separat
 
 ## Distribution
 
-**Phase 1:** Local file link. Consumers depend on the shell via `"claude-plugins-site": "file:../../claude-plugins-site"` in `package.json`. Both current consumers live under `/Users/yurii/Projects/` alongside `claude-plugins-site`, so this is a one-line change per consumer.
+The shell ships raw `.astro` + `.ts` source — no build step, no `dist/` directory. The consumer's Astro/Vite pipeline is what compiles our source. This makes every distribution mechanism below work identically: all three options are "point pnpm at the source tree," they only differ in *where* that tree comes from. `peerDependencies: { astro: "^6.1.8" }` guarantees the consumer has a compatible compiler at build time.
 
-**Phase 2 (not in this spec):** Pin to a git tag: `"claude-plugins-site": "github:crankshift/claude-plugins-site#v1.0.0"`. Registry publish is a further option if/when a third consumer appears outside this machine.
+| Option | Consumer `package.json` | Shell-side work | When to use |
+|---|---|---|---|
+| `file:` link | `"claude-plugins-site": "file:../../claude-plugins-site"` | Nothing | Local development, bootstrap, both repos on one machine |
+| GitHub install | `"claude-plugins-site": "github:crankshift/claude-plugins-site#v1.0.0"` | `git tag && git push --tags` | Version-pinned, cross-machine, no registry account needed |
+| npm publish | `"@crankshift/claude-plugins-site": "^1.0.0"` (scoped) | `npm publish` once per version | API has stabilized, open to third-party consumers, want clean semver UX |
 
-No workspace manifest, no pnpm workspace wiring. Shell and consumers stay as independent repos, connected only by the `file:` path during phase 1.
+**Phased rollout:**
+
+1. **Phase 1 — `file:` link.** During initial shell development + lawpowers migration. Both repos sit under `/Users/yurii/Projects/` so the path is one line per consumer. Zero publish round-trip when iterating.
+2. **Phase 2 — npm publish.** Once the API has survived the lawpowers migration. Publish to `@crankshift/claude-plugins-site` (or whatever scope the owner prefers) with `publishConfig.access: "public"`. Consumers switch their `package.json` to a semver range. Skip the git-tag install intermediate step — npm publish is ~5 min of one-time setup and gives cleaner UX forever.
+3. **Git-tag install is a fallback**, documented but not the default path. Useful only if the owner specifically doesn't want a registry presence.
+
+**What npm publish requires on the shell side:**
+
+- `package.json` fields: `name` (scoped), `version`, `description`, `license`, `repository`, `keywords`, `publishConfig.access: "public"` if scoped.
+- `files` allowlist (or rely on `.npmignore`) so the tarball contains `src/`, `README.md`, `LICENSE` — and nothing else (no `dev/` playground, no `docs/`, no `.astro` cache).
+- The `exports` map already defined in this spec publishes unchanged; npm consumers use identical `import { PageShell } from '@scope/claude-plugins-site'` paths.
+- Tag-and-publish discipline: `npm version patch|minor|major && git push --tags && npm publish`. A tiny release script in `scripts/release.mjs` can wrap this, but isn't required for v1.
+
+No workspace manifest, no pnpm workspace wiring. Shell and consumers stay as independent repos at every phase.
 
 ## Package shape
 
