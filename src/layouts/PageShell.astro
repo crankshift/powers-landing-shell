@@ -40,7 +40,7 @@ const { lang, t, site } = Astro.props
       <Sources t={t} site={site} />
     </slot>
     <slot name="disclaimer">
-      <Disclaimer t={t} />
+      <Disclaimer t={t} site={site} />
     </slot>
     <slot />
   </main>

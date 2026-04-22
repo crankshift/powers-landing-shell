@@ -1,17 +1,18 @@
 ---
-import type { ShellTranslation } from '../types'
+import type { ShellTranslation, SiteConfig } from '../types'
 
 interface Props {
   t: ShellTranslation
+  site: SiteConfig
 }
 
-const { t } = Astro.props
+const { t, site } = Astro.props
 ---
 
 <section class="disclaimer" id="disclaimer">
   <div class="container">
     <div class="inner">
-      <div class="warn-mark" aria-hidden="true"><span>§</span></div>
+      <div class="warn-mark" aria-hidden="true"><span>{site.brandSymbol ?? '§'}</span></div>
       <div>
         <div class="tag">⚠ {t.disclaimer.tag}</div>
         <h3>{t.disclaimer.title}</h3>
