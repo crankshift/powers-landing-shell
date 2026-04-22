@@ -1,0 +1,50 @@
+---
+import BaseLayout from './BaseLayout.astro'
+import Nav from '../components/Nav.astro'
+import Hero from '../components/Hero.astro'
+import Plugins from '../components/Plugins.astro'
+import Install from '../components/Install.astro'
+import Principles from '../components/Principles.astro'
+import Sources from '../components/Sources.astro'
+import Disclaimer from '../components/Disclaimer.astro'
+import Footer from '../components/Footer.astro'
+import type { ShellTranslation, SiteConfig } from '../types'
+
+interface Props {
+  lang: string
+  t: ShellTranslation
+  site: SiteConfig
+}
+
+const { lang, t, site } = Astro.props
+---
+
+<BaseLayout lang={lang} t={t} site={site}>
+  <slot name="nav">
+    <Nav lang={lang} t={t} site={site} />
+  </slot>
+  <main>
+    <slot name="hero">
+      <Hero t={t} site={site} />
+    </slot>
+    <slot name="plugins">
+      <Plugins t={t} site={site} />
+    </slot>
+    <slot name="install">
+      <Install t={t} site={site} />
+    </slot>
+    <slot name="principles">
+      <Principles t={t} />
+    </slot>
+    <slot name="sources">
+      <Sources t={t} site={site} />
+    </slot>
+    <slot name="disclaimer">
+      <Disclaimer t={t} />
+    </slot>
+    <slot />
+  </main>
+  <slot name="footer">
+    <Footer t={t} site={site} />
+  </slot>
+</BaseLayout>
