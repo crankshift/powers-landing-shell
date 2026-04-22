@@ -19,7 +19,7 @@ const extIcon = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none" ari
     <div class="foot-grid">
       <div>
         <div class="foot-brand">
-          <BrandMark />
+          {site.brandSymbol ? <BrandMark>{site.brandSymbol}</BrandMark> : <BrandMark />}
           <span>{site.brand}</span>
         </div>
         <p class="tagline">{t.footer.tagline}</p>
