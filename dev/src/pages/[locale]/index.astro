@@ -1,0 +1,23 @@
+---
+import BaseLayout from 'claude-plugins-site/layouts/BaseLayout.astro'
+import { isLang, getT } from 'claude-plugins-site/i18n'
+import { site } from '../../config'
+import { dicts } from '../../locales'
+
+export function getStaticPaths() {
+  return site.locales.map(({ code }) => ({ params: { locale: code } }))
+}
+
+const { locale } = Astro.params
+if (!isLang(locale, site.locales)) {
+  throw new Error(`Unsupported locale: ${locale}`)
+}
+const t = getT(locale, dicts)
+---
+
+<BaseLayout lang={locale} t={t} site={site}>
+  <main style="padding: 80px 20px; font-family: var(--font-sans)">
+    <h1>BaseLayout wired for /{locale}/</h1>
+    <p>Brand: {site.brand}. Locale: {t.locale}.</p>
+  </main>
+</BaseLayout>
